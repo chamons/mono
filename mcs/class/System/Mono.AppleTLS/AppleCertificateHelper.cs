@@ -7,13 +7,23 @@
 //
 // Copyright (c) 2015 Xamarin, Inc.
 //
+
+#if MONO_SECURITY_ALIAS
+extern alias MonoSecurity;
+#endif
+
 using System;
 using System.Collections;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
-using Mono.Security.Interface;
 using MX = Mono.Security.X509;
+
+#if MONO_SECURITY_ALIAS
+using MonoSecurity::Mono.Security.Interface;
+#else
+using Mono.Security.Interface;
+#endif
 
 //using Foundation;
 //using CoreFoundation;
