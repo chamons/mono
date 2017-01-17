@@ -13,7 +13,6 @@
 ../Mono.Security/Mono.Security.Interface/IMonoTlsEventSink.cs
 ../Mono.Security/Mono.Security.Interface/MonoTlsConnectionInfo.cs
 ../Mono.Security/Mono.Security.Interface/MonoTlsProvider.cs
-../Mono.Security/Mono.Security.Interface/MonoTlsProviderFactory.Apple.cs
 ../Mono.Security/Mono.Security.Interface/MonoTlsProviderFactory.cs
 ../Mono.Security/Mono.Security.Interface/MonoTlsSettings.cs
 ../Mono.Security/Mono.Security.Interface/TlsException.cs
@@ -100,7 +99,6 @@ Mono.Net.Security/MobileAuthenticatedStream.cs
 Mono.Net.Security/MobileTlsContext.cs
 Mono.Net.Security/MonoSslStreamImpl.cs
 Mono.Net.Security/MonoSslStreamWrapper.cs
-Mono.Net.Security/MonoTlsProviderFactory.Apple.cs
 Mono.Net.Security/MonoTlsProviderFactory.cs
 Mono.Net.Security/MonoTlsProviderImpl.cs
 Mono.Net.Security/MonoTlsProviderWrapper.cs
