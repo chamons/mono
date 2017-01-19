@@ -325,7 +325,9 @@ namespace Security.Tls
 				Debug ("  {0} SslCipherSuite.{1} {2:x} {3}", IsServer ? "Server" : "Client", c, (int)c, (CipherSuiteCode)c);
 
 			if (Settings != null && Settings.EnabledCiphers != null) {
-				var ciphers = Settings.EnabledCiphers.Select (c => (SslCipherSuite)c).ToArray ();
+				SslCipherSuite [] ciphers = new SslCipherSuite [Settings.EnabledCiphers.Length];
+				for (int i = 0 ; i < Settings.EnabledCiphers.Length; ++i)
+					ciphers [i] = (SslCipherSuite)Settings.EnabledCiphers[i];
 				SetEnabledCiphers (ciphers);
 			}
 
@@ -577,15 +579,15 @@ namespace Security.Tls
 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLSetEnabledCiphers (/* SSLContextRef */ IntPtr context, SslCipherSuite *ciphers, /* size_t */ nint numCiphers);
 
-		public unsafe void SetEnabledCiphers (IEnumerable<SslCipherSuite> ciphers)
+		public unsafe void SetEnabledCiphers (SslCipherSuite [] ciphers)
 		{
 			if (ciphers == null)
 				throw new ArgumentNullException ("ciphers");
 
 			SslStatus result;
-			var array = ciphers.ToArray ();
-			fixed (SslCipherSuite *p = array)
-				result = SSLSetEnabledCiphers (Handle, p, ciphers.Count ());
+
+			fixed (SslCipherSuite *p = ciphers)
+				result = SSLSetEnabledCiphers (Handle, p, ciphers.Length);
 			CheckStatusAndThrow (result);
 		}
 
@@ -646,7 +648,15 @@ namespace Security.Tls
 			if (identity == null)
 				throw new ArgumentNullException ("identity");
 			int i = 0;
-			int n = certificates == null ? 0 : certificates.Count ();
+
+			int n = 0;
+			if (certificates != null)
+			{
+				using (var enumerator = certificates.GetEnumerator())
+    					while (enumerator.MoveNext())
+        					n++;
+			}
+
 			var ptrs = new IntPtr [n + 1];
 			ptrs [0] = identity.Handle;
 			foreach (var certificate in certificates)
@@ -714,7 +724,7 @@ namespace Security.Tls
 		extern static /* OSStatus */ SslStatus SSLSetIOFuncs (/* SSLContextRef */ IntPtr context, /* SSLReadFunc */ SslReadFunc readFunc, /* SSLWriteFunc */ SslWriteFunc writeFunc);
 
 		[MonoPInvokeCallback (typeof (SslReadFunc))]
-		static SslStatus NativeReadCallback (IntPtr ptr, IntPtr data, ref nint dataLength)
+		static SslStatus NativeReadCallback (IntPtr ptr, IntPtr data, ref /*HACK*/ IntPtr dataLength)
 		{
 			var handle = GCHandle.FromIntPtr (ptr);
 			if (!handle.IsAllocated)
@@ -734,7 +744,7 @@ namespace Security.Tls
 		}
 
 		[MonoPInvokeCallback (typeof (SslWriteFunc))]
-		static SslStatus NativeWriteCallback (IntPtr ptr, IntPtr data, ref nint dataLength)
+		static SslStatus NativeWriteCallback (IntPtr ptr, IntPtr data, ref /*HACK*/ IntPtr dataLength)
 		{
 			var handle = GCHandle.FromIntPtr (ptr);
 			if (!handle.IsAllocated)
@@ -753,7 +763,7 @@ namespace Security.Tls
 			}
 		}
 
-		SslStatus NativeReadCallback (IntPtr data, ref nint dataLength)
+		SslStatus NativeReadCallback (IntPtr data, ref /*HACK*/ IntPtr dataLength)
 		{
 			if (closed || disposed || Parent == null)
 				return SslStatus.ClosedAbort;
@@ -765,7 +775,7 @@ namespace Security.Tls
 
 			bool wantMore;
 			var ret = Parent.InternalRead (readBuffer, 0, len, out wantMore);
-			dataLength = ret;
+			dataLength = (IntPtr)ret; // HACK
 
 			Debug ("NativeReadCallback #1: {0} - {1} {2}", len, ret, wantMore);
 
@@ -786,7 +796,7 @@ namespace Security.Tls
 			}
 		}
 
-		SslStatus NativeWriteCallback (IntPtr data, ref nint dataLength)
+		SslStatus NativeWriteCallback (IntPtr data, ref /*HACK*/ IntPtr dataLength)
 		{
 			if (closed || disposed || Parent == null)
 				return SslStatus.ClosedAbort;

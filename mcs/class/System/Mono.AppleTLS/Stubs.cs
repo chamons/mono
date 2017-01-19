@@ -284,6 +284,7 @@ namespace Foundation
 	{
 		public IntPtr Handle => IntPtr.Zero;
 		public void Dispose () {}
+		static public NSArray FromIntPtrs (IntPtr [] vals) { return null; }
 	}
 }
 	
