@@ -1,7 +1,8 @@
 using System;
-using nint = System.IntPtr;
 using System.Security.Cryptography.X509Certificates;
 using System.Runtime.InteropServices;
+
+using nint = System.IntPtr;
 
 namespace Security
 {

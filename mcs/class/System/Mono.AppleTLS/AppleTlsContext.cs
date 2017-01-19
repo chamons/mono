@@ -41,10 +41,7 @@ using Foundation;
 using CoreFoundation;
 using ObjCRuntime;
 
-//STUB
-//using nint = System.IntPtr;
-// HACK!!!
-using nint = System.Int32;
+using nint = System.IntPtr;
 
 namespace Security.Tls
 {
@@ -504,15 +501,15 @@ namespace Security.Tls
 				IntPtr id;
 				var result = SSLGetPeerID (Handle, out id, out length);
 				CheckStatusAndThrow (result);
-				if ((result != SslStatus.Success) || (length == 0))
+				if ((result != SslStatus.Success) || ((int)length == 0))
 					return null;
-				var data = new byte [length];
+				var data = new byte [(int)length];
 				Marshal.Copy (id, data, 0, (int) length);
 				return data;
 			}
 			set {
 				SslStatus result;
-				nint length = (value == null) ? 0 : value.Length;
+				nint length = (value == null) ? (IntPtr)0 : (IntPtr)value.Length;
 				fixed (byte *p = value) {
 					result = SSLSetPeerID (Handle, p, length);
 				}
@@ -543,10 +540,10 @@ namespace Security.Tls
 			nint n;
 			var result = SSLGetNumberSupportedCiphers (Handle, out n);
 			CheckStatusAndThrow (result);
-			if ((result != SslStatus.Success) || (n <= 0))
+			if ((result != SslStatus.Success) || ((int)n <= 0))
 				return null;
 
-			var ciphers = new SslCipherSuite [n];
+			var ciphers = new SslCipherSuite [(int)n];
 			fixed (SslCipherSuite *p = ciphers) {
 				result = SSLGetSupportedCiphers (Handle, p, ref n);
 			}
@@ -565,10 +562,10 @@ namespace Security.Tls
 			nint n;
 			var result = SSLGetNumberEnabledCiphers (Handle, out n);
 			CheckStatusAndThrow (result);
-			if ((result != SslStatus.Success) || (n <= 0))
+			if ((result != SslStatus.Success) || ((int)n <= 0))
 				return null;
 
-			var ciphers = new SslCipherSuite [n];
+			var ciphers = new SslCipherSuite [(int)n];
 			fixed (SslCipherSuite *p = ciphers) {
 				result = SSLGetEnabledCiphers (Handle, p, ref n);
 			}
@@ -587,7 +584,7 @@ namespace Security.Tls
 			SslStatus result;
 
 			fixed (SslCipherSuite *p = ciphers)
-				result = SSLSetEnabledCiphers (Handle, p, ciphers.Length);
+				result = SSLSetEnabledCiphers (Handle, p, (IntPtr)ciphers.Length);
 			CheckStatusAndThrow (result);
 		}
 
@@ -617,24 +614,24 @@ namespace Security.Tls
 				nint length;
 				var result = SSLGetPeerDomainNameLength (Handle, out length);
 				CheckStatusAndThrow (result);
-				if (result != SslStatus.Success || length == 0)
+				if (result != SslStatus.Success || (int)length == 0)
 					return String.Empty;
-				var bytes = new byte [length];
+				var bytes = new byte [(int)length];
 				result = SSLGetPeerDomainName (Handle, bytes, ref length);
 				CheckStatusAndThrow (result);
 				if (result != SslStatus.Success)
 					return string.Empty;
-				if (length > 0 && bytes [length-1] == 0)
-					length--;
+				if ((int)length > 0 && bytes [(int)length-1] == 0)
+					length = (IntPtr)((int)length - 1);
 				return Encoding.UTF8.GetString (bytes, 0, (int)length);
 			}
 			set {
 				SslStatus result;
 				if (value == null) {
-					result = SSLSetPeerDomainName (Handle, null, 0);
+					result = SSLSetPeerDomainName (Handle, null, (IntPtr)0);
 				} else {
 					var bytes = Encoding.UTF8.GetBytes (value);
-					result = SSLSetPeerDomainName (Handle, bytes, bytes.Length);
+					result = SSLSetPeerDomainName (Handle, bytes, (IntPtr)bytes.Length);
 				}
 				CheckStatusAndThrow (result);
 			}
@@ -832,7 +829,7 @@ namespace Security.Tls
 				SslStatus status;
 
 				fixed (byte *d = &buffer [offset])
-					status = SSLRead (Handle, d, count, out processed);
+					status = SSLRead (Handle, d, (IntPtr)count, out processed);
 
 				Debug ("Read done: {0} {1} {2}", status, count, processed);
 
@@ -871,10 +868,10 @@ namespace Security.Tls
 
 			try {
 				SslStatus status = SslStatus.ClosedAbort;
-				nint processed =  -1;
+				nint processed =  (IntPtr)(-1);
 
 				fixed (byte *d = &buffer [offset])
-					status = SSLWrite (Handle, d, count, out processed);
+					status = SSLWrite (Handle, d, (IntPtr)count, out processed);
 
 				Debug ("Write done: {0} {1}", status, processed);
 
