@@ -1,5 +1,6 @@
 using System;
 using nint = System.IntPtr;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Security
 {
@@ -7,9 +8,39 @@ namespace Security
 
 	delegate SslStatus SslWriteFunc (IntPtr connection, IntPtr data, /* size_t* */ ref nint dataLength);
 
-	class SecIdentity {}
-	class SecCertificate {}
-	class SecTrust {}
+	class SecIdentity : IDisposable {
+		public static SecIdentity Import (X509Certificate2 certificate) {return null;}
+		public void Dispose () {}
+	}
+	class SecCertificate : IDisposable {
+		public SecCertificate (X509Certificate certificate) {}
+		public SecCertificate (X509CertificateImpl impl) {}
+		public SecCertificate (X509Certificate2 certificate) {}
+		public void Dispose () {}
+	}
+
+	class SecTrust {
+		public SecTrust (X509CertificateCollection certificates, SecPolicy policy) {}
+		public SecTrustResult Evaluate () {return SecTrustResult.Unspecified;}
+		public SecStatusCode SetAnchorCertificates (X509CertificateCollection certificates) { return SecStatusCode.Success; }
+		public SecStatusCode SetAnchorCertificatesOnly (bool anchorCertificatesOnly) { return SecStatusCode.Success; }
+	}
+	
+	public class SecPolicy {
+		static public SecPolicy CreateSslPolicy (bool server, string hostName) { return null; }
+	}
+
+	public enum SecStatusCode {
+		Success = 0,
+	}
+	
+	public enum SecTrustResult {
+		Unspecified,
+	}
+	
+	internal class SecKeyChain {
+		internal static SecIdentity FindIdentity (SecCertificate certificate, bool throwOnError = false) { return null; }
+	}
 
 	public enum SslAuthenticate {
 		Never,
