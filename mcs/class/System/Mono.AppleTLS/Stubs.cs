@@ -1,6 +1,7 @@
 using System;
 using nint = System.IntPtr;
 using System.Security.Cryptography.X509Certificates;
+using System.Runtime.InteropServices;
 
 namespace Security
 {
@@ -11,19 +12,27 @@ namespace Security
 	class SecIdentity : IDisposable {
 		public static SecIdentity Import (X509Certificate2 certificate) {return null;}
 		public void Dispose () {}
+		public IntPtr Handle => IntPtr.Zero;
 	}
 	class SecCertificate : IDisposable {
 		public SecCertificate (X509Certificate certificate) {}
 		public SecCertificate (X509CertificateImpl impl) {}
 		public SecCertificate (X509Certificate2 certificate) {}
 		public void Dispose () {}
+		public X509Certificate ToX509Certificate () { return null; }
+		public IntPtr Handle => IntPtr.Zero;
 	}
 
 	class SecTrust {
+		public SecTrust (IntPtr p) {}
 		public SecTrust (X509CertificateCollection certificates, SecPolicy policy) {}
 		public SecTrustResult Evaluate () {return SecTrustResult.Unspecified;}
 		public SecStatusCode SetAnchorCertificates (X509CertificateCollection certificates) { return SecStatusCode.Success; }
 		public SecStatusCode SetAnchorCertificatesOnly (bool anchorCertificatesOnly) { return SecStatusCode.Success; }
+
+		public int Count => 0;
+		public SecCertificate this [nint index] { get { return null; } }
+		public SecCertificate this [int index] { get { return null; } }
 	}
 	
 	public class SecPolicy {
@@ -271,5 +280,30 @@ namespace Security
 
 namespace Foundation
 {
-	class NSArray {}
+	class NSArray : IDisposable
+	{
+		public IntPtr Handle => IntPtr.Zero;
+		public void Dispose () {}
+	}
+}
+	
+namespace CoreFoundation
+{
+ 	class CFObject {
+		[DllImport ("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
+		internal extern static void CFRelease (IntPtr obj);
+	}
+}
+
+namespace ObjCRuntime 
+{
+	[AttributeUsage (AttributeTargets.All, AllowMultiple = true)]
+	public class Mac : Attribute
+	{	public Mac (byte major, byte minor) { }
+		public Mac (byte major, byte minor, bool onlyOn64 = false){ }
+	}
+	
+	class MonoPInvokeCallbackAttribute : Attribute {
+			public MonoPInvokeCallbackAttribute (Type t) {}
+	}
 }

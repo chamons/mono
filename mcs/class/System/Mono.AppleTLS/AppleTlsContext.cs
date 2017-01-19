@@ -38,11 +38,13 @@ using Mono.Net.Security;
 
 using Security;
 using Foundation;
-//using CoreFoundation;
-//using ObjCRuntime;
+using CoreFoundation;
+using ObjCRuntime;
 
 //STUB
-using nint = System.IntPtr;
+//using nint = System.IntPtr;
+// HACK!!!
+using nint = System.Int32;
 
 namespace Security.Tls
 {
@@ -114,7 +116,7 @@ namespace Security.Tls
 			if (last != null)
 				throw last;
 
-			if (status == SslStatus.Success || acceptable.Contains (status))
+			if (status == SslStatus.Success || Array.IndexOf (acceptable, status) > -1)
 				return;
 
 			switch (status) {
@@ -392,11 +394,11 @@ namespace Security.Tls
 		#region General P/Invokes
 
 		[Mac (10,8)]
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* OSStatus */ SslStatus SSLGetProtocolVersionMax (/* SSLContextRef */ IntPtr context, out SslProtocol maxVersion);
 
 		[Mac (10,8)]
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* OSStatus */ SslStatus SSLSetProtocolVersionMax (/* SSLContextRef */ IntPtr context, SslProtocol maxVersion);
 
 		public SslProtocol MaxProtocol {
@@ -413,11 +415,11 @@ namespace Security.Tls
 		}
 
 		[Mac (10,8)]
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* OSStatus */ SslStatus SSLGetProtocolVersionMin (/* SSLContextRef */ IntPtr context, out SslProtocol minVersion);
 
 		[Mac (10,8)]
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* OSStatus */ SslStatus SSLSetProtocolVersionMin (/* SSLContextRef */ IntPtr context, SslProtocol minVersion);
 
 		public SslProtocol MinProtocol {
@@ -433,7 +435,7 @@ namespace Security.Tls
 			}
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* OSStatus */ SslStatus SSLGetNegotiatedProtocolVersion (/* SSLContextRef */ IntPtr context, out SslProtocol protocol);
 
 		public SslProtocol GetNegotiatedProtocolVersion ()
@@ -444,7 +446,7 @@ namespace Security.Tls
 			return value;
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* OSStatus */ SslStatus SSLGetSessionOption (/* SSLContextRef */ IntPtr context, SslSessionOption option, out bool value);
 
 		public bool GetSessionOption (SslSessionOption option)
@@ -455,7 +457,7 @@ namespace Security.Tls
 			return value;
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* OSStatus */ SslStatus SSLSetSessionOption (/* SSLContextRef */ IntPtr context, SslSessionOption option, bool value);
 
 		public void SetSessionOption (SslSessionOption option, bool value)
@@ -464,7 +466,7 @@ namespace Security.Tls
 			CheckStatusAndThrow (result);
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* OSStatus */ SslStatus SSLSetClientSideAuthenticate (/* SSLContextRef */ IntPtr context, SslAuthenticate auth);
 
 		public void SetClientSideAuthenticate (SslAuthenticate auth)
@@ -473,10 +475,10 @@ namespace Security.Tls
 			CheckStatusAndThrow (result);
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* OSStatus */ SslStatus SSLHandshake (/* SSLContextRef */ IntPtr context);
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* OSStatus */ SslStatus SSLGetSessionState (/* SSLContextRef */ IntPtr context, ref SslSessionState state);
 
 		public SslSessionState SessionState {
@@ -488,10 +490,10 @@ namespace Security.Tls
 			}
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLGetPeerID (/* SSLContextRef */ IntPtr context, /* const void** */ out IntPtr peerID, /* size_t* */ out nint peerIDLen);
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLSetPeerID (/* SSLContextRef */ IntPtr context, /* const void* */ byte* peerID, /* size_t */ nint peerIDLen);
 
 		public unsafe byte[] PeerId {
@@ -516,7 +518,7 @@ namespace Security.Tls
 			}
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLGetBufferedReadSize (/* SSLContextRef */ IntPtr context, /* size_t* */ out nint bufSize);
 
 		public nint BufferedReadSize {
@@ -528,10 +530,10 @@ namespace Security.Tls
 			}
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLGetNumberSupportedCiphers (/* SSLContextRef */ IntPtr context, /* size_t* */ out nint numCiphers);
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLGetSupportedCiphers (/* SSLContextRef */ IntPtr context, SslCipherSuite *ciphers, /* size_t* */ ref nint numCiphers);
 
 		public unsafe IList<SslCipherSuite> GetSupportedCiphers ()
@@ -550,10 +552,10 @@ namespace Security.Tls
 			return new List<SslCipherSuite> (ciphers);
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLGetNumberEnabledCiphers (/* SSLContextRef */ IntPtr context, /* size_t* */ out nint numCiphers);
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLGetEnabledCiphers (/* SSLContextRef */ IntPtr context, SslCipherSuite *ciphers, /* size_t* */ ref nint numCiphers);
 
 		public unsafe IList<SslCipherSuite> GetEnabledCiphers ()
@@ -572,7 +574,7 @@ namespace Security.Tls
 			return new List<SslCipherSuite> (ciphers);
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLSetEnabledCiphers (/* SSLContextRef */ IntPtr context, SslCipherSuite *ciphers, /* size_t */ nint numCiphers);
 
 		public unsafe void SetEnabledCiphers (IEnumerable<SslCipherSuite> ciphers)
@@ -587,7 +589,7 @@ namespace Security.Tls
 			CheckStatusAndThrow (result);
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLGetNegotiatedCipher (/* SSLContextRef */ IntPtr context, /* SslCipherSuite* */ out SslCipherSuite cipherSuite);
 
 		public SslCipherSuite NegotiatedCipher {
@@ -599,13 +601,13 @@ namespace Security.Tls
 			}
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLGetPeerDomainNameLength (/* SSLContextRef */ IntPtr context, /* size_t* */ out nint peerNameLen);
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLGetPeerDomainName (/* SSLContextRef */ IntPtr context, /* char* */ byte[] peerName, /* size_t */ ref nint peerNameLen);
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLSetPeerDomainName (/* SSLContextRef */ IntPtr context, /* char* */ byte[] peerName, /* size_t */ nint peerNameLen);
 
 		public string PeerDomainName {
@@ -636,7 +638,7 @@ namespace Security.Tls
 			}
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLSetCertificate (/* SSLContextRef */ IntPtr context, /* CFArrayRef */ IntPtr certRefs);
 
 		NSArray Bundle (SecIdentity identity, IEnumerable<SecCertificate> certificates)
@@ -660,7 +662,7 @@ namespace Security.Tls
 			}
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLGetClientCertificateState (/* SSLContextRef */ IntPtr context, out SslClientCertificateState clientState);
 
 		public SslClientCertificateState ClientCertificateState {
@@ -672,7 +674,7 @@ namespace Security.Tls
 			}
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLCopyPeerTrust (/* SSLContextRef */ IntPtr context, /* SecTrustRef */ out IntPtr trust);
 
 		public SecTrust GetPeerTrust (bool requireTrust)
@@ -688,7 +690,7 @@ namespace Security.Tls
 		}
 
 		[Mac (10,8)]
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* CFType */ IntPtr SSLContextGetTypeID ();
 
 		[Mac (10,8)]
@@ -702,13 +704,13 @@ namespace Security.Tls
 		#region IO Functions
 
 		[Mac (10,8)]
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* SSLContextRef */ IntPtr SSLCreateContext (/* CFAllocatorRef */ IntPtr alloc, SslProtocolSide protocolSide, SslConnectionType connectionType);
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* OSStatus */ SslStatus SSLSetConnection (/* SSLContextRef */ IntPtr context, /* SSLConnectionRef */ IntPtr connection);
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* OSStatus */ SslStatus SSLSetIOFuncs (/* SSLContextRef */ IntPtr context, /* SSLReadFunc */ SslReadFunc readFunc, /* SSLWriteFunc */ SslWriteFunc writeFunc);
 
 		[MonoPInvokeCallback (typeof (SslReadFunc))]
@@ -803,7 +805,7 @@ namespace Security.Tls
 			return ok ? SslStatus.Success : SslStatus.ClosedAbort;
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLRead (/* SSLContextRef */ IntPtr context, /* const void* */ byte* data, /* size_t */ nint dataLength, /* size_t* */ out nint processed);
 
 		public override unsafe int Read (byte[] buffer, int offset, int count, out bool wantMore)
@@ -845,7 +847,7 @@ namespace Security.Tls
 			}
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLWrite (/* SSLContextRef */ IntPtr context, /* const void* */ byte* data, /* size_t */ nint dataLength, /* size_t* */ out nint processed);
 
 		public override unsafe int Write (byte[] buffer, int offset, int count, out bool wantMore)
@@ -875,7 +877,7 @@ namespace Security.Tls
 			}
 		}
 
-		[DllImport (Constants.SecurityLibrary)]
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* OSStatus */ SslStatus SSLClose (/* SSLContextRef */ IntPtr context);
 
 		public override void Close ()
