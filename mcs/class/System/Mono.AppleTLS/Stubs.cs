@@ -279,24 +279,6 @@ namespace Security
 	}
 }
 
-namespace Foundation
-{
-	class NSArray : IDisposable
-	{
-		public IntPtr Handle => IntPtr.Zero;
-		public void Dispose () {}
-		static public NSArray FromIntPtrs (IntPtr [] vals) { return null; }
-	}
-}
-	
-namespace CoreFoundation
-{
- 	class CFObject {
-		[DllImport ("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
-		internal extern static void CFRelease (IntPtr obj);
-	}
-}
-
 namespace ObjCRuntime 
 {
 	[AttributeUsage (AttributeTargets.All, AllowMultiple = true)]

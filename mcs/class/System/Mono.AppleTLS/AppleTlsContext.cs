@@ -34,11 +34,10 @@ using MonoSecurity::Mono.Security.Interface;
 using Mono.Security.Interface;
 #endif
 
+using Mono.Net;
 using Mono.Net.Security;
 
 using Security;
-using Foundation;
-using CoreFoundation;
 using ObjCRuntime;
 
 using nint = System.IntPtr;
@@ -640,7 +639,7 @@ namespace Security.Tls
 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* OSStatus */ SslStatus SSLSetCertificate (/* SSLContextRef */ IntPtr context, /* CFArrayRef */ IntPtr certRefs);
 
-		NSArray Bundle (SecIdentity identity, IEnumerable<SecCertificate> certificates)
+		CFArray Bundle (SecIdentity identity, IEnumerable<SecCertificate> certificates)
 		{
 			if (identity == null)
 				throw new ArgumentNullException ("identity");
@@ -658,7 +657,7 @@ namespace Security.Tls
 			ptrs [0] = identity.Handle;
 			foreach (var certificate in certificates)
 				ptrs [++i] = certificate.Handle;
-			return NSArray.FromIntPtrs (ptrs);
+			return CFArray.Create (ptrs);
 		}
 
 		public void SetCertificate (SecIdentity identify, IEnumerable<SecCertificate> certificates)
