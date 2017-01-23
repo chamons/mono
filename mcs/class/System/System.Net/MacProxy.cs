@@ -84,7 +84,7 @@ namespace Mono.Net
 		}
 
 		[DllImport (CoreFoundationLibrary)]
-		extern static void CFRelease (IntPtr handle);
+		internal extern static void CFRelease (IntPtr handle);
 
 		void Release ()
 		{
@@ -127,7 +127,7 @@ namespace Mono.Net
 			}
 		}
 
-		static unsafe CFArray Create (params IntPtr[] values)
+		internal static unsafe CFArray Create (params IntPtr[] values)
 		{
 			if (values == null)
 				throw new ArgumentNullException ("values");
