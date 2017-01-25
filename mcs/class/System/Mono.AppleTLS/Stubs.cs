@@ -17,18 +17,6 @@ namespace Security
 
 namespace ObjCRuntime 
 {
-	[AttributeUsage (AttributeTargets.All, AllowMultiple = true)]
-	public class Mac : Attribute
-	{	public Mac (byte major, byte minor) { }
-		public Mac (byte major, byte minor, bool onlyOn64 = false){ }
-	}
-	
-	[AttributeUsage (AttributeTargets.All, AllowMultiple = true)]
-	public class iOS : Attribute
-	{	public iOS (byte major, byte minor) { }
-		public iOS (byte major, byte minor, bool onlyOn64 = false){ }
-	}
-	
 	class MonoPInvokeCallbackAttribute : Attribute {
 			public MonoPInvokeCallbackAttribute (Type t) {}
 	}

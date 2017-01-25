@@ -391,11 +391,9 @@ namespace Security.Tls
 
 		#region General P/Invokes
 
-		[Mac (10,8)]
 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* OSStatus */ SslStatus SSLGetProtocolVersionMax (/* SSLContextRef */ IntPtr context, out SslProtocol maxVersion);
 
-		[Mac (10,8)]
 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* OSStatus */ SslStatus SSLSetProtocolVersionMax (/* SSLContextRef */ IntPtr context, SslProtocol maxVersion);
 
@@ -412,11 +410,9 @@ namespace Security.Tls
 			}
 		}
 
-		[Mac (10,8)]
 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* OSStatus */ SslStatus SSLGetProtocolVersionMin (/* SSLContextRef */ IntPtr context, out SslProtocol minVersion);
 
-		[Mac (10,8)]
 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* OSStatus */ SslStatus SSLSetProtocolVersionMin (/* SSLContextRef */ IntPtr context, SslProtocol minVersion);
 
@@ -695,11 +691,9 @@ namespace Security.Tls
 			return (value == IntPtr.Zero) ? null : new SecTrust (value);
 		}
 
-		[Mac (10,8)]
 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern unsafe static /* CFType */ IntPtr SSLContextGetTypeID ();
 
-		[Mac (10,8)]
 		public static IntPtr GetTypeId ()
 		{
 			return SSLContextGetTypeID ();
@@ -709,7 +703,6 @@ namespace Security.Tls
 
 		#region IO Functions
 
-		[Mac (10,8)]
 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
 		extern static /* SSLContextRef */ IntPtr SSLCreateContext (/* CFAllocatorRef */ IntPtr alloc, SslProtocolSide protocolSide, SslConnectionType connectionType);
 
