@@ -9,20 +9,9 @@ namespace Security
 	delegate SslStatus SslReadFunc (IntPtr connection, IntPtr data, /* size_t* */ ref nint dataLength);
 
 	delegate SslStatus SslWriteFunc (IntPtr connection, IntPtr data, /* size_t* */ ref nint dataLength);
-
-	class SecTrust {
-		public SecTrust (IntPtr p) {}
-		public SecTrust (X509CertificateCollection certificates, SecPolicy policy) {}
-		public SecTrustResult Evaluate () {return SecTrustResult.Unspecified;}
-		public SecStatusCode SetAnchorCertificates (X509CertificateCollection certificates) { return SecStatusCode.Success; }
-		public SecStatusCode SetAnchorCertificatesOnly (bool anchorCertificatesOnly) { return SecStatusCode.Success; }
-
-		public int Count => 0;
-		public SecCertificate this [nint index] { get { return null; } }
-		public SecCertificate this [int index] { get { return null; } }
-	}
 	
 	public class SecPolicy {
+		public IntPtr Handle => IntPtr.Zero;
 		static public SecPolicy CreateSslPolicy (bool server, string hostName) { return null; }
 	}
 

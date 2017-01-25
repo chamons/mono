@@ -29,6 +29,7 @@ using System.Net;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
+using ObjCRuntime;
 
 namespace Mono.Net
 {
@@ -126,8 +127,22 @@ namespace Mono.Net
 				dlclose (handle);
 			}
 		}
+		
+		public static CFArray FromNativeObjects (params INativeObject[] values)
+		{
+			return new CFArray (Create (values), true);
+		}
 
-		internal static unsafe CFArray Create (params IntPtr[] values)
+		public static unsafe IntPtr Create (params IntPtr[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException ("values");
+			fixed (IntPtr* pv = values) {
+				return CFArrayCreate (IntPtr.Zero, (IntPtr) pv, (IntPtr)values.Length, kCFTypeArrayCallbacks);
+			}
+		}
+
+		internal static unsafe CFArray CreateArray (params IntPtr[] values)
 		{
 			if (values == null)
 				throw new ArgumentNullException ("values");
@@ -138,16 +153,19 @@ namespace Mono.Net
 				return new CFArray (handle, false);
 			}
 		}
+		
+		public static CFArray CreateArray (params INativeObject[] values)
+		{
+			return new CFArray (Create (values), false);
+		}
 
-		public static CFArray Create (params CFObject[] values)
+		public static IntPtr Create (params INativeObject[] values)
 		{
 			if (values == null)
 				throw new ArgumentNullException ("values");
-
 			IntPtr[] _values = new IntPtr [values.Length];
-			for (int i = 0; i < _values.Length; i++)
-				_values[i] = values[i].Handle;
-
+			for (int i = 0; i < _values.Length; ++i)
+				_values [i] = values [i].Handle;
 			return Create (_values);
 		}
 

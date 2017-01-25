@@ -275,7 +275,7 @@ namespace Security.Tls
 
 				certificates = new X509CertificateCollection ();
 				for (int i = 0; i < trust.Count; i++)
-					certificates.Add (trust [i].ToX509Certificate ());
+					certificates.Add (trust [(IntPtr)i].ToX509Certificate ());
 
 				remoteCertificate = certificates [0];
 				Debug ("Got peer trust: {0}", remoteCertificate);
@@ -657,7 +657,7 @@ namespace Security.Tls
 			ptrs [0] = identity.Handle;
 			foreach (var certificate in certificates)
 				ptrs [++i] = certificate.Handle;
-			return CFArray.Create (ptrs);
+			return CFArray.CreateArray (ptrs);
 		}
 
 		public void SetCertificate (SecIdentity identify, IEnumerable<SecCertificate> certificates)
