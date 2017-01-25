@@ -589,6 +589,7 @@ Mono.AppleTLS/SecureTransport.cs
 Mono.AppleTLS/Policy.cs
 Mono.AppleTLS/Trust.cs
 Mono.AppleTLS/Stubs.cs
+Mono.AppleTLS/SslConnection.cs
 MonoTouch/MonoPInvokeCallbackAttribute.cs
 
 Mono.Net.Security/AsyncProtocolRequest.cs
