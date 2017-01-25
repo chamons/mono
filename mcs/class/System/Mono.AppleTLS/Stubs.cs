@@ -14,10 +14,3 @@ namespace Security
 		internal static SecIdentity FindIdentity (SecCertificate certificate, bool throwOnError = false) { return null; }
 	}
 }
-
-namespace ObjCRuntime 
-{
-	class MonoPInvokeCallbackAttribute : Attribute {
-			public MonoPInvokeCallbackAttribute (Type t) {}
-	}
-}
