@@ -584,6 +584,8 @@ Mono.AppleTLS/INativeObject.cs
 Mono.AppleTLS/PreserveAttribute.cs
 Mono.AppleTLS/Certificate.cs
 Mono.AppleTLS/ImportExport.cs
+Mono.AppleTLS/Enums.cs
+Mono.AppleTLS/SecureTransport.cs
 Mono.AppleTLS/Stubs.cs
 
 Mono.Net.Security/AsyncProtocolRequest.cs
