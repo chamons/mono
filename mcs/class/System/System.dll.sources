@@ -586,6 +586,7 @@ Mono.AppleTLS/Certificate.cs
 Mono.AppleTLS/ImportExport.cs
 Mono.AppleTLS/Enums.cs
 Mono.AppleTLS/SecureTransport.cs
+Mono.AppleTLS/Policy.cs
 Mono.AppleTLS/Trust.cs
 Mono.AppleTLS/Stubs.cs
 

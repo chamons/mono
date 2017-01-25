@@ -10,11 +10,6 @@ namespace Security
 
 	delegate SslStatus SslWriteFunc (IntPtr connection, IntPtr data, /* size_t* */ ref nint dataLength);
 	
-	public class SecPolicy {
-		public IntPtr Handle => IntPtr.Zero;
-		static public SecPolicy CreateSslPolicy (bool server, string hostName) { return null; }
-	}
-
 	internal class SecKeyChain {
 		internal static SecIdentity FindIdentity (SecCertificate certificate, bool throwOnError = false) { return null; }
 	}
