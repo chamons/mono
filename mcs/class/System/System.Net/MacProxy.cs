@@ -340,7 +340,45 @@ namespace Mono.Net
 		{
 			return Create (str);
 		}
+
+		// to be used when an API like CF*Get* returns a CFString
+		internal static string FetchString (IntPtr handle)
+		{
+			if (handle == IntPtr.Zero)
+				return null;
+			
+			string str;
+			
+			int l = (int)CFStringGetLength (handle);
+			IntPtr u = CFStringGetCharactersPtr (handle);
+			IntPtr buffer = IntPtr.Zero;
+			if (u == IntPtr.Zero){
+				CFRange r = new CFRange (0, l);
+				buffer = Marshal.AllocCoTaskMem (l * 2);
+				CFStringGetCharacters (handle, r, buffer);
+				u = buffer;
+			}
+			unsafe {
+				str = new string ((char *) u, 0, l);
+			}
+			
+			if (buffer != IntPtr.Zero)
+				Marshal.FreeCoTaskMem (buffer);
+
+			return str;
+		}
+		
+		// to be used when an API like CF*Copy* returns a CFString
+		internal static string FetchString (IntPtr handle, bool releaseHandle)
+		{
+			var s = FetchString (handle);
+			if (releaseHandle && (handle != IntPtr.Zero))
+				CFObject.CFRelease (handle);
+			return s;
+		}
+
 	}
+
 	
 	internal class CFData : CFObject
 	{
@@ -360,6 +398,36 @@ namespace Mono.Net
 		{
 			return new CFData (CFDataCreate (IntPtr.Zero, buffer, length), true);
 		}
+		
+		public IntPtr Length {
+			get { return CFDataGetLength (Handle); }
+		}
+
+		[DllImport ("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
+		extern static /* CFIndex */ IntPtr CFDataGetLength (/* CFDataRef */ IntPtr theData);
+
+		[DllImport ("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
+		extern static /* UInt8* */ IntPtr CFDataGetBytePtr (/* CFDataRef */ IntPtr theData);
+
+		/*
+		 * Exposes a read-only pointer to the underlying storage.
+		 */
+		public IntPtr Bytes {
+			get { return CFDataGetBytePtr (Handle); }
+		}
+
+		public byte this [long idx] {
+			get {
+				if (idx < 0 || (ulong) idx > (ulong) Length)
+					throw new ArgumentException ("idx");
+				return Marshal.ReadByte (new IntPtr (Bytes.ToInt64 () + idx));
+			}
+
+			set {
+				throw new NotImplementedException ("NSData arrays can not be modified, use an NSMutableData instead");
+			}
+		}
+
 	}
 
 	internal class CFDictionary : CFObject
