@@ -10,15 +10,11 @@ namespace Security
 
 	delegate SslStatus SslWriteFunc (IntPtr connection, IntPtr data, /* size_t* */ ref nint dataLength);
 
-	class SecIdentity : IDisposable {
-		public static SecIdentity Import (X509Certificate2 certificate) {return null;}
-		public void Dispose () {}
-		public IntPtr Handle => IntPtr.Zero;
-	}
 	class SecCertificate : IDisposable {
 		public SecCertificate (X509Certificate certificate) {}
 		public SecCertificate (X509CertificateImpl impl) {}
 		public SecCertificate (X509Certificate2 certificate) {}
+ 		internal SecCertificate (IntPtr handle, bool owns) {}
 		public void Dispose () {}
 		public X509Certificate ToX509Certificate () { return null; }
 		public IntPtr Handle => IntPtr.Zero;

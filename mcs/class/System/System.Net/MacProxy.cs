@@ -76,7 +76,7 @@ namespace Mono.Net
 		public IntPtr Handle { get; private set; }
 
 		[DllImport (CoreFoundationLibrary)]
-		extern static IntPtr CFRetain (IntPtr handle);
+		internal extern static IntPtr CFRetain (IntPtr handle);
 
 		void Retain ()
 		{
@@ -165,6 +165,20 @@ namespace Mono.Net
 			get {
 				return CFArrayGetValueAtIndex (Handle, (IntPtr) index);
 			}
+		}
+		
+		static public T [] ArrayFromHandle<T> (IntPtr handle, Func<IntPtr, T> creation) where T : CFObject
+		{
+			if (handle == IntPtr.Zero)
+				return null;
+
+			var c = CFArrayGetCount (handle);
+			T [] ret = new T [(int)c];
+
+			for (uint i = 0; i < (uint)c; i++) {
+				ret [i] = creation (CFArrayGetValueAtIndex (handle, (IntPtr)i));
+			}
+			return ret;
 		}
 	}
 
@@ -327,10 +341,55 @@ namespace Mono.Net
 			return Create (str);
 		}
 	}
+	
+	internal class CFData : CFObject
+	{
+		public CFData (IntPtr handle, bool own) : base (handle, own) { }
+	
+		[DllImport ("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
+		extern static /* CFDataRef */ IntPtr CFDataCreate (/* CFAllocatorRef */ IntPtr allocator, /* UInt8* */ IntPtr bytes, /* CFIndex */ IntPtr length);
+		public unsafe static CFData FromData (byte [] buffer)
+		{
+			fixed (byte* p = buffer)
+			{
+				return FromData ((IntPtr)p, (IntPtr)buffer.Length);
+			}
+		}
+
+		public static CFData FromData (IntPtr buffer, IntPtr length)
+		{
+			return new CFData (CFDataCreate (IntPtr.Zero, buffer, length), true);
+		}
+	}
 
 	internal class CFDictionary : CFObject
 	{
+		static readonly IntPtr KeyCallbacks;
+		static readonly IntPtr ValueCallbacks;
+		
+		static CFDictionary ()
+		{
+			var handle = dlopen (CoreFoundationLibrary, 0);
+			if (handle == IntPtr.Zero)
+				return;
+
+			try {		
+				KeyCallbacks = GetIndirect (handle, "kCFTypeDictionaryKeyCallBacks");
+				ValueCallbacks = GetIndirect (handle, "kCFTypeDictionaryValueCallBacks");
+			} finally {
+				dlclose (handle);
+			}
+		}
+
 		public CFDictionary (IntPtr handle, bool own) : base (handle, own) { }
+
+		public static CFDictionary FromObjectAndKey (IntPtr obj, IntPtr key)
+		{
+			return new CFDictionary (CFDictionaryCreate (IntPtr.Zero, new IntPtr[] { key}, new IntPtr [] { obj}, (IntPtr)1, KeyCallbacks, ValueCallbacks), true);
+		}
+		
+		[DllImport (CoreFoundationLibrary)]
+		extern static IntPtr CFDictionaryCreate (IntPtr allocator, IntPtr[] keys, IntPtr[] vals, IntPtr len, IntPtr keyCallbacks, IntPtr valCallbacks);
 
 		[DllImport (CoreFoundationLibrary)]
 		extern static IntPtr CFDictionaryGetValue (IntPtr handle, IntPtr key);
