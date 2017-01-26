@@ -61,7 +61,7 @@ namespace Security {
 			if (!owns)
 				CFObject.CFRetain (handle);
 		}
-#if !COREBUILD
+		
 		[DllImport ("/System/Library/Frameworks/Security.framework/Security", EntryPoint="SecCertificateGetTypeID")]
 		public extern static IntPtr GetTypeID ();
 			
@@ -307,7 +307,6 @@ namespace Security {
 				}
 			}
 		}
-#endif
 #endif	
 		~SecCertificate ()
 		{
@@ -456,460 +455,50 @@ namespace Security {
 			}
 		}
 	}
-// 
-// #if !COREBUILD
-// 	public partial class SecKey : INativeObject, IDisposable {
-// 		internal IntPtr handle;
-// 		
-// 		// invoked by marshallers
-// 		public SecKey (IntPtr handle)
-// 			: this (handle, false)
-// 		{
-// 		}
-// 		
-// 		[Preserve (Conditional = true)]
-// 		public SecKey (IntPtr handle, bool owns)
-// 		{
-// 			this.handle = handle;
-// 			if (!owns)
-// 				CFObject.CFRetain (handle);
-// 		}
-// 
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security", EntryPoint="SecKeyGetTypeID")]
-// 		public extern static nint GetTypeID ();
-// 		
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-// 		extern static SecStatusCode SecKeyGeneratePair (IntPtr dictHandle, out IntPtr pubKey, out IntPtr privKey);
-// 
-// 		// TODO: pull all the TypeRefs needed for the NSDictionary
-// 		
-// 		public static SecStatusCode GenerateKeyPair (NSDictionary parameters, out SecKey publicKey, out SecKey privateKey)
-// 		{
-// 			if (parameters == null)
-// 				throw new ArgumentNullException ("parameters");
-// 
-// 			IntPtr pub, priv;
-// 			
-// 			var res = SecKeyGeneratePair (parameters.Handle, out pub, out priv);
-// 			if (res == SecStatusCode.Success){
-// 				publicKey = new SecKey (pub, true);
-// 				privateKey = new SecKey (priv, true);
-// 			} else
-// 				publicKey = privateKey = null;
-// 			return res;
-// 		}
-// 			
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-// 		extern static /* size_t */ nint SecKeyGetBlockSize (IntPtr handle);
-// 
-// 		public int BlockSize {
-// 			get {
-// 				if (handle == IntPtr.Zero)
-// 					throw new ObjectDisposedException ("SecKey");
-// 				
-// 				return (int) SecKeyGetBlockSize (handle);
-// 			}
-// 		}
-// 
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-// 		extern static SecStatusCode SecKeyRawSign (IntPtr handle, SecPadding padding, IntPtr dataToSign, nint dataToSignLen, IntPtr sig, ref nint sigLen);
-// 
-// 		public SecStatusCode RawSign (SecPadding padding, IntPtr dataToSign, int dataToSignLen, out byte [] result)
-// 		{
-// 			if (handle == IntPtr.Zero)
-// 				throw new ObjectDisposedException ("SecKey");
-// 			if (dataToSign == IntPtr.Zero)
-// 				throw new ArgumentException ("dataToSign");
-// 
-// 			return _RawSign (padding, dataToSign, dataToSignLen, out result);
-// 		}
-// 
-// 		public unsafe SecStatusCode RawSign (SecPadding padding, byte [] dataToSign, out byte [] result)
-// 		{
-// 			if (handle == IntPtr.Zero)
-// 				throw new ObjectDisposedException ("SecKey");
-// 			if (dataToSign == null)
-// 				throw new ArgumentNullException ("dataToSign");
-// 
-// 			fixed (byte *bp = dataToSign)
-// 				return _RawSign (padding, (IntPtr) bp, dataToSign.Length, out result);
-// 		}
-// 
-// 		unsafe SecStatusCode _RawSign (SecPadding padding, IntPtr dataToSign, int dataToSignLen, out byte [] result)
-// 		{
-// 			SecStatusCode status;
-// 			nint len = 1024;
-// 			result = new byte [len];
-// 			fixed (byte *p = result) {
-// 				status = SecKeyRawSign (handle, padding, dataToSign, dataToSignLen, (IntPtr) p, ref len);
-// 				Array.Resize (ref result, (int) len);
-// 			}
-// 			return status;
-// 		}
-// 		
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-// 		extern static SecStatusCode SecKeyRawVerify (IntPtr handle, SecPadding padding, IntPtr signedData, nint signedLen, IntPtr sign, nint signLen);
-// 
-// 		public unsafe SecStatusCode RawVerify (SecPadding padding, IntPtr signedData, int signedDataLen, IntPtr signature, int signatureLen)
-// 		{
-// 			if (handle == IntPtr.Zero)
-// 				throw new ObjectDisposedException ("SecKey");
-// 
-// 			return SecKeyRawVerify (handle, padding, signedData, (nint) signedDataLen, signature, (nint) signatureLen);
-// 		}
-// 
-// 		public SecStatusCode RawVerify (SecPadding padding, byte [] signedData, byte [] signature)
-// 		{
-// 			if (handle == IntPtr.Zero)
-// 				throw new ObjectDisposedException ("SecKey");
-// 
-// 			if (signature == null)
-// 				throw new ArgumentNullException ("signature");
-// 			if (signedData == null)
-// 				throw new ArgumentNullException ("signedData");
-// 			unsafe {
-// 				fixed (byte *sp = signature)
-// 				fixed (byte *dp = signedData) {
-// 					return SecKeyRawVerify (handle, padding, (IntPtr) dp, (nint) signedData.Length, (IntPtr) sp, (nint) signature.Length);
-// 				}
-// 			}
-// 		}
-// 		
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-// 		extern static SecStatusCode SecKeyEncrypt (IntPtr handle, SecPadding padding, IntPtr plainText, nint plainTextLen, IntPtr cipherText, ref nint cipherTextLengh);
-// 
-// #if !XAMCORE_2_0
-// 		[Obsolete ("Use the Encrypt overload which returns (out) the cipherTextLen value so you can adjust it if needed")]
-// 		public unsafe SecStatusCode Encrypt (SecPadding padding, IntPtr plainText, int plainTextLen, IntPtr cipherText, int cipherTextLen)
-// 		{
-// 			if (handle == IntPtr.Zero)
-// 				throw new ObjectDisposedException ("SecKey");
-// 
-// 			nint len = (nint) cipherTextLen;
-// 			return SecKeyEncrypt (handle, padding, plainText, (nint) plainTextLen, cipherText, ref len);
-// 		}
-// #endif
-// 		public unsafe SecStatusCode Encrypt (SecPadding padding, IntPtr plainText, nint plainTextLen, IntPtr cipherText, ref nint cipherTextLen)
-// 		{
-// 			if (handle == IntPtr.Zero)
-// 				throw new ObjectDisposedException ("SecKey");
-// 
-// 			return SecKeyEncrypt (handle, padding, plainText, plainTextLen, cipherText, ref cipherTextLen);
-// 		}
-// 
-// 		public SecStatusCode Encrypt (SecPadding padding, byte [] plainText, byte [] cipherText)
-// 		{
-// 			if (handle == IntPtr.Zero)
-// 				throw new ObjectDisposedException ("SecKey");
-// 
-// 			if (cipherText == null)
-// 				throw new ArgumentNullException ("cipherText");
-// 			if (plainText == null)
-// 				throw new ArgumentNullException ("plainText");
-// 			unsafe {
-// 				fixed (byte *cp = cipherText)
-// 				fixed (byte *pp = plainText) {
-// 					nint len = (nint) cipherText.Length;
-// 					return SecKeyEncrypt (handle, padding, (IntPtr) pp, (nint) plainText.Length, (IntPtr) cp, ref len);
-// 				}
-// 			}
-// 		}
-// 
-// 		public SecStatusCode Encrypt (SecPadding padding, byte [] plainText, out byte [] cipherText)
-// 		{
-// 			cipherText = new byte [BlockSize];
-// 			return Encrypt (padding, plainText, cipherText);
-// 		}
-// 
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-// 		extern static SecStatusCode SecKeyDecrypt (IntPtr handle, SecPadding padding, IntPtr cipherTextLen, nint cipherLen, IntPtr plainText, ref nint plainTextLen);
-// 
-// #if !XAMCORE_2_0
-// 		[Obsolete ("Use the Decrypt overload which returns (ref) the plainTextLen value so you can adjust it if needed")]
-// 		public unsafe SecStatusCode Decrypt (SecPadding padding, IntPtr cipherText, int cipherTextLen, IntPtr plainText, int plainTextLen)
-// 		{
-// 			if (handle == IntPtr.Zero)
-// 				throw new ObjectDisposedException ("SecKey");
-// 
-// 			int len = plainTextLen;
-// 			return SecKeyDecrypt (handle, padding, cipherText, cipherTextLen, plainText, ref len);
-// 		}
-// #endif
-// 		public unsafe SecStatusCode Decrypt (SecPadding padding, IntPtr cipherText, nint cipherTextLen, IntPtr plainText, ref nint plainTextLen)
-// 		{
-// 			if (handle == IntPtr.Zero)
-// 				throw new ObjectDisposedException ("SecKey");
-// 
-// 			return SecKeyDecrypt (handle, padding, cipherText, cipherTextLen, plainText, ref plainTextLen);
-// 		}
-// 
-// 		SecStatusCode _Decrypt (SecPadding padding, byte [] cipherText, ref byte [] plainText)
-// 		{
-// 			if (handle == IntPtr.Zero)
-// 				throw new ObjectDisposedException ("SecKey");
-// 
-// 			if (cipherText == null)
-// 				throw new ArgumentNullException ("cipherText");
-// 		
-// 			unsafe {
-// 				fixed (byte *cp = cipherText) {
-// 					if (plainText == null)
-// 						plainText = new byte [cipherText.Length];
-// 					nint len = plainText.Length;
-// 					SecStatusCode status;
-// 					fixed (byte *pp = plainText)
-// 						status = SecKeyDecrypt (handle, padding, (IntPtr)cp, (nint)cipherText.Length, (IntPtr)pp, ref len);
-// 					if (len < plainText.Length)
-// 						Array.Resize<byte> (ref plainText, (int) len);
-// 					return status;
-// 				}
-// 			}
-// 		}
-// 
-// #if !XAMCORE_2_0
-// 		[Obsolete ("Use the Decrypt overload which returns (out) the plainText array so you can adjust it if needed")]
-// 		public SecStatusCode Decrypt (SecPadding padding, byte [] cipherText, byte [] plainText)
-// 		{
-// 			if (plainText == null)
-// 				throw new ArgumentNullException ("plainText");
-// 
-// 			return _Decrypt (padding, cipherText, ref plainText);
-// 		}
-// #endif
-// 		public SecStatusCode Decrypt (SecPadding padding, byte [] cipherText, out byte [] plainText)
-// 		{
-// 			plainText = null;
-// 			return _Decrypt (padding, cipherText, ref plainText);
-// 		}
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-// 		static extern IntPtr /* SecKeyRef _Nullable */ SecKeyCreateRandomKey (IntPtr /* CFDictionaryRef* */ parameters, out IntPtr /* CFErrorRef** */ error);
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		static public SecKey CreateRandomKey (NSDictionary parameters, out NSError error)
-// 		{
-// 			if (parameters == null)
-// 				throw new ArgumentNullException (nameof (parameters));
-// 
-// 			IntPtr err;
-// 			var key = SecKeyCreateRandomKey (parameters.Handle, out err);
-// 			error = err == IntPtr.Zero ? null : new NSError (err);
-// 			return key == IntPtr.Zero ? null : new SecKey (key, true);
-// 		}
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		static public SecKey CreateRandomKey (SecKeyType keyType, int keySizeInBits, NSDictionary parameters, out NSError error)
-// 		{
-// 			using (var ks = new NSNumber (keySizeInBits))
-// 			using (var md = parameters == null ? new NSMutableDictionary () : new NSMutableDictionary (parameters)) {
-// 				md.LowlevelSetObject (keyType.GetConstant (), SecAttributeKey.KeyType);
-// 				md.LowlevelSetObject (ks, SecAttributeKey.KeySizeInBits);
-// 				return CreateRandomKey (md, out error);
-// 			}
-// 		}
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-// 		static extern IntPtr /* SecKeyRef _Nullable */ SecKeyCreateWithData (IntPtr /* CFDataRef* */ keyData, IntPtr /* CFDictionaryRef* */ attributes, out IntPtr /* CFErrorRef** */ error);
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		static public SecKey Create (NSData keyData, NSDictionary parameters, out NSError error)
-// 		{
-// 			if (keyData == null)
-// 				throw new ArgumentNullException (nameof (keyData));
-// 			if (parameters == null)
-// 				throw new ArgumentNullException (nameof (parameters));
-// 
-// 			IntPtr err;
-// 			var key = SecKeyCreateWithData (keyData.Handle, parameters.Handle, out err);
-// 			error = err == IntPtr.Zero ? null : new NSError (err);
-// 			return key == IntPtr.Zero ? null : new SecKey (key, true);
-// 		}
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		static public SecKey Create (NSData keyData, SecKeyType keyType, SecKeyClass keyClass, int keySizeInBits, NSDictionary parameters, out NSError error)
-// 		{
-// 			using (var ks = new NSNumber (keySizeInBits))
-// 			using (var md = parameters == null ? new NSMutableDictionary () : new NSMutableDictionary (parameters)) {
-// 				md.LowlevelSetObject (keyType.GetConstant (), SecAttributeKey.KeyType);
-// 				md.LowlevelSetObject (keyClass.GetConstant (), SecAttributeKey.KeyClass);
-// 				md.LowlevelSetObject (ks, SecAttributeKey.KeySizeInBits);
-// 				return Create (keyData, md, out error);
-// 			}
-// 		}
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-// 		static extern IntPtr /* CFDataRef _Nullable */ SecKeyCopyExternalRepresentation (IntPtr /* SecKeyRef* */ key, out IntPtr /* CFErrorRef** */ error);
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		public NSData GetExternalRepresentation (out NSError error)
-// 		{
-// 			IntPtr err;
-// 			var data = SecKeyCopyExternalRepresentation (handle, out err);
-// 			error = err == IntPtr.Zero ? null : new NSError (err);
-// 			return Runtime.GetNSObject<NSData> (data, true);
-// 		}
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		public NSData GetExternalRepresentation ()
-// 		{
-// 			IntPtr err;
-// 			var data = SecKeyCopyExternalRepresentation (handle, out err);
-// 			return Runtime.GetNSObject<NSData> (data, true);
-// 		}
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-// 		static extern IntPtr /* CFDictionaryRef _Nullable */ SecKeyCopyAttributes (IntPtr /* SecKeyRef* */ key);
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		public NSDictionary GetAttributes ()
-// 		{
-// 			var dict = SecKeyCopyAttributes (handle);
-// 			return Runtime.GetNSObject<NSDictionary> (dict, true);
-// 		}
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-// 		static extern IntPtr /* SecKeyRef* */ SecKeyCopyPublicKey (IntPtr /* SecKeyRef* */ key);
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		public SecKey GetPublicKey ()
-// 		{
-// 			var key = SecKeyCopyPublicKey (handle);
-// 			return key == IntPtr.Zero ? null : new SecKey (key, true);
-// 		}
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-// 		static extern bool /* Boolean */ SecKeyIsAlgorithmSupported (IntPtr /* SecKeyRef* */ key, /* SecKeyOperationType */ nint operation, IntPtr /* SecKeyAlgorithm* */ algorithm);
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		public bool IsAlgorithmSupported (SecKeyOperationType operation, SecKeyAlgorithm algorithm)
-// 		{
-// 			return SecKeyIsAlgorithmSupported (handle, (int) operation, algorithm.GetConstant ().Handle);
-// 		}
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-// 		static extern /* CFDataRef _Nullable */ IntPtr SecKeyCreateSignature (/* SecKeyRef */ IntPtr key, /* SecKeyAlgorithm */ IntPtr algorithm, /* CFDataRef */ IntPtr dataToSign, /* CFErrorRef* */ out IntPtr error);
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		public NSData CreateSignature (SecKeyAlgorithm algorithm, NSData dataToSign, out NSError error)
-// 		{
-// 			if (dataToSign == null)
-// 				throw new ArgumentNullException (nameof (dataToSign));
-// 
-// 			IntPtr err;
-// 			var data = SecKeyCreateSignature (Handle, algorithm.GetConstant ().Handle, dataToSign.Handle, out err);
-// 			error = err == IntPtr.Zero ? null : new NSError (err);
-// 			return Runtime.GetNSObject<NSData> (data, true);
-// 		}
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-// 		static extern /* Boolean */ bool SecKeyVerifySignature (/* SecKeyRef */ IntPtr key, /* SecKeyAlgorithm */ IntPtr algorithm, /* CFDataRef */ IntPtr signedData, /* CFDataRef */ IntPtr signature, /* CFErrorRef* */ out IntPtr error);
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		public bool VerifySignature (SecKeyAlgorithm algorithm, NSData signedData, NSData signature, out NSError error)
-// 		{
-// 			if (signedData == null)
-// 				throw new ArgumentNullException (nameof (signedData));
-// 			if (signature == null)
-// 				throw new ArgumentNullException (nameof (signature));
-// 			
-// 			IntPtr err;
-// 			var result = SecKeyVerifySignature (Handle, algorithm.GetConstant ().Handle, signedData.Handle, signature.Handle, out err);
-// 			error = err == IntPtr.Zero ? null : new NSError (err);
-// 			return result;
-// 		}
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-// 		static extern /* CFDataRef _Nullable */ IntPtr SecKeyCreateEncryptedData (/* SecKeyRef */ IntPtr key, /* SecKeyAlgorithm */ IntPtr algorithm, /* CFDataRef */ IntPtr plaintext, /* CFErrorRef* */ out IntPtr error);
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		public NSData CreateEncryptedData (SecKeyAlgorithm algorithm, NSData plaintext, out NSError error)
-// 		{
-// 			if (plaintext == null)
-// 				throw new ArgumentNullException (nameof (plaintext));
-// 
-// 			IntPtr err;
-// 			var data = SecKeyCreateEncryptedData (Handle, algorithm.GetConstant ().Handle, plaintext.Handle, out err);
-// 			error = err == IntPtr.Zero ? null : new NSError (err);
-// 			return Runtime.GetNSObject<NSData> (data, true);
-// 		}
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-// 		static extern /* CFDataRef _Nullable */ IntPtr SecKeyCreateDecryptedData (/* SecKeyRef */ IntPtr key, /* SecKeyAlgorithm */ IntPtr algorithm, /* CFDataRef */ IntPtr ciphertext, /* CFErrorRef* */ out IntPtr error);
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		public NSData CreateDecryptedData (SecKeyAlgorithm algorithm, NSData ciphertext, out NSError error)
-// 		{
-// 			if (ciphertext == null)
-// 				throw new ArgumentNullException (nameof (ciphertext));
-// 
-// 			IntPtr err;
-// 			var data = SecKeyCreateDecryptedData (Handle, algorithm.GetConstant ().Handle, ciphertext.Handle, out err);
-// 			error = err == IntPtr.Zero ? null : new NSError (err);
-// 			return Runtime.GetNSObject<NSData> (data, true);
-// 		}
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-// 		static extern /* CFDataRef _Nullable */ IntPtr SecKeyCopyKeyExchangeResult (/* SecKeyRef */ IntPtr privateKey, /* SecKeyAlgorithm */ IntPtr algorithm, /* SecKeyRef */ IntPtr publicKey, /* CFDictionaryRef */ IntPtr parameters, /* CFErrorRef* */ out IntPtr error);
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		public NSData GetKeyExchangeResult (SecKeyAlgorithm algorithm, SecKey publicKey, NSDictionary parameters, out NSError error)
-// 		{
-// 			if (publicKey == null)
-// 				throw new ArgumentNullException (nameof (publicKey));
-// 			if (parameters == null)
-// 				throw new ArgumentNullException (nameof (parameters));
-// 
-// 			IntPtr err;
-// 			var data = SecKeyCopyKeyExchangeResult (Handle, algorithm.GetConstant ().Handle, publicKey.Handle, parameters.Handle, out err);
-// 			error = err == IntPtr.Zero ? null : new NSError (err);
-// 			return Runtime.GetNSObject<NSData> (data, true);
-// 		}
-// 
-// 		[Watch (3,0)][TV (10,0)][Mac (10,12)][iOS (10,0)]
-// 		public NSData GetKeyExchangeResult (SecKeyAlgorithm algorithm, SecKey publicKey, SecKeyKeyExchangeParameter parameters, out NSError error)
-// 		{
-// 			return GetKeyExchangeResult (algorithm, publicKey, parameters?.Dictionary, out error);
-// 		}
-// 
-// 		~SecKey ()
-// 		{
-// 			Dispose (false);
-// 		}
-// 
-// 		public IntPtr Handle {
-// 			get {
-// 				return handle;
-// 			}
-// 		}
-// 
-// 		public void Dispose ()
-// 		{
-// 			Dispose (true);
-// 			GC.SuppressFinalize (this);
-// 		}
-// 
-// #if XAMCORE_2_0
-// 		protected virtual void Dispose (bool disposing)
-// #else
-// 		public virtual void Dispose (bool disposing)
-// #endif
-// 		{
-// 			if (handle != IntPtr.Zero){
-// 				CFObject.CFRelease (handle);
-// 				handle = IntPtr.Zero;
-// 			}
-// 		}
-// 	}
-// #endif
+
+	public partial class SecKey : INativeObject, IDisposable {
+		internal IntPtr handle;
+		
+		// invoked by marshallers
+		public SecKey (IntPtr handle)
+			: this (handle, false)
+		{
+		}
+		
+		[Preserve (Conditional = true)]
+		public SecKey (IntPtr handle, bool owns)
+		{
+			this.handle = handle;
+			if (!owns)
+				CFObject.CFRetain (handle);
+		}
+
+		[DllImport ("/System/Library/Frameworks/Security.framework/Security", EntryPoint="SecKeyGetTypeID")]
+		public extern static IntPtr GetTypeID ();
+		
+		~SecKey ()
+		{
+			Dispose (false);
+		}
+
+		public IntPtr Handle {
+			get {
+				return handle;
+			}
+		}
+
+		public void Dispose ()
+		{
+			Dispose (true);
+			GC.SuppressFinalize (this);
+		}
+
+		protected virtual void Dispose (bool disposing)
+		{
+			if (handle != IntPtr.Zero){
+				CFObject.CFRelease (handle);
+				handle = IntPtr.Zero;
+			}
+		}
+	}
 }

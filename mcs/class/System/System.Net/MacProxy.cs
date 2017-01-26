@@ -33,7 +33,12 @@ using ObjCRuntime;
 
 namespace Mono.Net
 {
-	internal class CFObject : IDisposable
+	internal class CFType {
+		[DllImport (CFObject.CoreFoundationLibrary, EntryPoint="CFGetTypeID")]
+		public static extern IntPtr GetTypeID (IntPtr typeRef);
+	}
+
+	internal class CFObject : IDisposable, INativeObject
 	{
 		public const string CoreFoundationLibrary = "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation";
 		const string SystemLibrary = "/usr/lib/libSystem.dylib";
@@ -185,7 +190,7 @@ namespace Mono.Net
 			}
 		}
 		
-		static public T [] ArrayFromHandle<T> (IntPtr handle, Func<IntPtr, T> creation) where T : CFObject
+		static public T [] ArrayFromHandle<T> (IntPtr handle, Func<IntPtr, T> creation) where T : class, INativeObject
 		{
 			if (handle == IntPtr.Zero)
 				return null;
@@ -240,6 +245,15 @@ namespace Mono.Net
 			CFNumberGetValue (handle, (IntPtr) 9, out value);
 
 			return value;
+		}
+		
+		[DllImport (CoreFoundationLibrary)]
+		extern static IntPtr CFNumberCreate (IntPtr allocator, IntPtr theType, IntPtr valuePtr);	
+
+		public static CFNumber FromInt32 (int number)
+		{
+			// 9 == kCFNumberIntType == C int
+			return new CFNumber (CFNumberCreate (IntPtr.Zero, (IntPtr)9, (IntPtr)number), true);
 		}
 
 		public static implicit operator int (CFNumber number)
@@ -480,6 +494,22 @@ namespace Mono.Net
 		[DllImport (CoreFoundationLibrary)]
 		extern static IntPtr CFDictionaryGetValue (IntPtr handle, IntPtr key);
 
+		[DllImport (CoreFoundationLibrary)]
+		extern static IntPtr CFDictionaryCreateCopy (IntPtr allocator, IntPtr handle);
+
+		public CFDictionary Copy ()
+		{
+			return new CFDictionary (CFDictionaryCreateCopy (IntPtr.Zero, Handle), true);
+		}
+		
+		public CFMutableDictionary MutableCopy ()
+		{
+			return new CFMutableDictionary (CFDictionaryCreateMutableCopy (IntPtr.Zero, IntPtr.Zero, Handle), true);
+		}
+
+		[DllImport (CoreFoundationLibrary)]
+		extern static IntPtr CFDictionaryCreateMutableCopy (IntPtr allocator, IntPtr capacity, IntPtr theDict);
+
 		public IntPtr GetValue (IntPtr key)
 		{
 			return CFDictionaryGetValue (Handle, key);
@@ -490,6 +520,19 @@ namespace Mono.Net
 				return GetValue (key);
 			}
 		}
+	}
+	
+	internal class CFMutableDictionary : CFDictionary
+	{
+		public CFMutableDictionary (IntPtr handle, bool own) : base (handle, own) { }
+
+		public void SetValue (IntPtr key, IntPtr val)
+		{
+			CFDictionarySetValue (Handle, key, val);
+		}
+
+		[DllImport (CoreFoundationLibrary)]
+		extern static void CFDictionarySetValue (IntPtr handle, IntPtr key, IntPtr val);
 	}
 
 	internal class CFUrl : CFObject
@@ -1211,4 +1254,90 @@ namespace Mono.Net
 			return new CFWebProxy ();
 		}
 	}
+
+	class CFBoolean : INativeObject, IDisposable {
+		IntPtr handle;
+
+		public static readonly CFBoolean True;
+		public static readonly CFBoolean False;
+
+		static CFBoolean ()
+		{
+			var handle = CFObject.dlopen (CFObject.CoreFoundationLibrary, 0);
+			if (handle == IntPtr.Zero)
+				return;
+			try {
+				True  = new CFBoolean (CFObject.dlsym (handle, "kCFBooleanTrue"), false);
+				False = new CFBoolean (CFObject.dlsym (handle, "kCFBooleanFalse"), false);
+			}
+			finally {
+				CFObject.dlclose (handle);
+			}
+		}
+
+		internal CFBoolean (IntPtr handle, bool owns)
+		{
+			this.handle = handle;
+			if (!owns)
+				CFObject.CFRetain (handle);
+		}
+
+		~CFBoolean ()
+		{
+			Dispose (false);
+		}
+
+		public IntPtr Handle {
+			get {
+				return handle;
+			}
+		}
+
+		public void Dispose ()
+		{
+			Dispose (true);
+			GC.SuppressFinalize (this);
+		}
+
+#if XAMCORE_2_0
+		protected virtual void Dispose (bool disposing)
+#else
+		public virtual void Dispose (bool disposing)
+#endif
+		{
+			if (handle != IntPtr.Zero){
+				CFObject.CFRelease (handle);
+				handle = IntPtr.Zero;
+			}
+		}
+
+		public static implicit operator bool (CFBoolean value)
+		{
+			return value.Value;
+		}
+
+		public static explicit operator CFBoolean (bool value)
+		{
+			return FromBoolean (value);
+		}
+
+		public static CFBoolean FromBoolean (bool value)
+		{
+			return value ? True : False;
+		}
+
+		[DllImport (CFObject.CoreFoundationLibrary)]
+		[return: MarshalAs (UnmanagedType.I1)]
+		extern static /* Boolean */ bool CFBooleanGetValue (/* CFBooleanRef */ IntPtr boolean);
+
+		public bool Value {
+			get {return CFBooleanGetValue (handle);}
+		}
+
+		public static bool GetValue (IntPtr boolean)
+		{
+			return CFBooleanGetValue (boolean);
+		}
+	}
+
 }
