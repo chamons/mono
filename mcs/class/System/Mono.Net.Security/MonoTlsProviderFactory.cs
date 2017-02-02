@@ -84,7 +84,7 @@ namespace Mono.Net.Security
 #elif MONO_FEATURE_APPLETLS
 					provider = new AppleTlsProvider ();
 #else
-#error No TLS Provider Found
+					provider = new LegacyTlsProvider ();
 #endif
 				}
 			}

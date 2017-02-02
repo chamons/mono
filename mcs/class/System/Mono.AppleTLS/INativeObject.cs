@@ -1,4 +1,3 @@
-#if MONO_FEATURE_APPLETLS
 using System;
 
 namespace ObjCRuntime {
@@ -20,4 +19,3 @@ namespace ObjCRuntime {
 	}
 
 }
-#endif
