@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 
 using ObjCRuntime;
 
-namespace Security 
+namespace Security.Tls 
 {
 	delegate SslStatus SslReadFunc (IntPtr connection, IntPtr data, /* size_t* */ ref IntPtr dataLength);
 	delegate SslStatus SslWriteFunc (IntPtr connection, IntPtr data, /* size_t* */ ref IntPtr dataLength);

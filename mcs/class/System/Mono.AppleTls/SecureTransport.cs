@@ -4,7 +4,7 @@
 using System;
 using ObjCRuntime;
 
-namespace Security {
+namespace Security.Tls {
 
 	// Security.framework/Headers/SecureTransport.h
 	// untyped enum

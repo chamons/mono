@@ -38,7 +38,7 @@ using Foundation;
 using ObjCRuntime;
 using Mono.Net;
 
-namespace Security {
+namespace Security.Tls {
 
 	enum SecKind {
 		Identity

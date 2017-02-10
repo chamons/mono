@@ -5,7 +5,7 @@ using System;
 using Foundation;
 using ObjCRuntime;
 
-namespace Security {
+namespace Security.Tls {
 
 	// this is a subset of OSStatus -> SInt32 -> signed int - see CoreFoundation.framework/Headers/CFBase.h
 	// values are defined in Security.framework/Headers/SecBase.h 

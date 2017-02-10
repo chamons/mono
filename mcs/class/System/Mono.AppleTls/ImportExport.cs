@@ -33,7 +33,7 @@ using ObjCRuntime;
 using Foundation;
 using Mono.Net;
 
-namespace Security {
+namespace Security.Tls {
 
 	internal partial class SecImportExport {
 		

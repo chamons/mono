@@ -38,7 +38,6 @@ using Mono.Net;
 using Mono.Net.Security;
 using MonoTouch;
 
-using Security;
 using ObjCRuntime;
 
 using nint = System.IntPtr;
