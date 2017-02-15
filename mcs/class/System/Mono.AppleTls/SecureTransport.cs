@@ -144,7 +144,7 @@ namespace Security.Tls {
 
 	// Security.framework/Headers/CipherSuite.h
 	// 32 bits (uint32_t) on OSX, 16 bits (uint16_t) on iOS
-#if MONOMAC
+#if XAMMAC || XAMMAC_4_5
 	enum SslCipherSuite : uint {
 #else
 	enum SslCipherSuite : ushort {
