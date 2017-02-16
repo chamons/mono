@@ -54,7 +54,7 @@ namespace Security.Tls {
 			
 			IntPtr handle;
 			SecStatusCode code = SecPKCS12Import (data.Handle, options.Handle, out handle);
-			array = CFArray.ArrayFromHandle <CFDictionary> (handle, h => new CFDictionary (h, true));
+			array = CFArray.ArrayFromHandle <CFDictionary> (handle, h => new CFDictionary (h, false));
 			CFObject.CFRelease (handle);
 			return code;
 		}
