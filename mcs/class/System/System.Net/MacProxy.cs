@@ -51,10 +51,29 @@ namespace Mono.Net
 
 		[DllImport (SystemLibrary)]
 		public static extern void dlclose (IntPtr handle);
-
+		
 		public static IntPtr GetIndirect (IntPtr handle, string symbol)
 		{
 			return dlsym (handle, symbol);
+		}
+
+		public static CFString GetStringConstant (IntPtr handle, string symbol)
+		{
+			var indirect = dlsym (handle, symbol);
+			if (indirect == IntPtr.Zero)
+				return null;
+			var actual = Marshal.ReadIntPtr (indirect);
+			if (actual == IntPtr.Zero)
+				return null;
+			return new CFString (actual, false);
+		}
+
+		public static IntPtr GetIntPtr (IntPtr handle, string symbol)
+		{
+			var indirect = dlsym (handle, symbol);
+			if (indirect == IntPtr.Zero)
+				return IntPtr.Zero;
+			return Marshal.ReadIntPtr (indirect);
 		}
 
 		public static IntPtr GetCFObjectHandle (IntPtr handle, string symbol)
@@ -485,7 +504,7 @@ namespace Mono.Net
 
 		public static CFDictionary FromObjectAndKey (IntPtr obj, IntPtr key)
 		{
-			return new CFDictionary (CFDictionaryCreate (IntPtr.Zero, new IntPtr[] { key}, new IntPtr [] { obj}, (IntPtr)1, KeyCallbacks, ValueCallbacks), true);
+			return new CFDictionary (CFDictionaryCreate (IntPtr.Zero, new IntPtr[] { key }, new IntPtr [] { obj }, (IntPtr)1, KeyCallbacks, ValueCallbacks), true);
 		}
 		
 		[DllImport (CoreFoundationLibrary)]

@@ -56,9 +56,9 @@ namespace Security.Tls {
 				return;
 
 			try {		
-				MatchLimit = CFObject.GetIndirect (handle, "kSecMatchLimit");
-				MatchLimitAll = CFObject.GetIndirect (handle, "kSecMatchLimitAll");
-				MatchLimitOne = CFObject.GetIndirect (handle, "kSecMatchLimitOne");
+				MatchLimit = CFObject.GetIntPtr (handle, "kSecMatchLimit");
+				MatchLimitAll = CFObject.GetIntPtr (handle, "kSecMatchLimitAll");
+				MatchLimitOne = CFObject.GetIntPtr (handle, "kSecMatchLimitOne");
 			} finally {
 				CFObject.dlclose (handle);
 			}
@@ -159,7 +159,7 @@ namespace Security.Tls {
 				return;
 
 			try {		
-				SecClassKey = CFObject.GetIndirect (handle, "kSecClassKey");
+				SecClassKey = CFObject.GetIntPtr (handle, "kSecClassKey");
 			} finally {
 				CFObject.dlclose (handle);
 			}
@@ -218,7 +218,7 @@ namespace Security.Tls {
 				return;
 
 			try {		
-				ReturnRef = CFObject.GetIndirect (handle, "kSecReturnRef");
+				ReturnRef = CFObject.GetIntPtr (handle, "kSecReturnRef");
 			} finally {
 				CFObject.dlclose (handle);
 			}
@@ -239,7 +239,7 @@ namespace Security.Tls {
 				return;
 
 			try {		
-				Identity = CFObject.GetIndirect (handle, "kSecClassIdentity");
+				Identity = CFObject.GetIntPtr (handle, "kSecClassIdentity");
 			} finally {
 				CFObject.dlclose (handle);
 			}

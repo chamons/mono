@@ -202,8 +202,8 @@ namespace Security.Tls {
 
 	partial class SecIdentity : INativeObject, IDisposable {
 		 
-		static readonly IntPtr ImportExportPassphase;
-		static readonly IntPtr ImportItemIdentity;
+		static readonly CFString ImportExportPassphase;
+		static readonly CFString ImportItemIdentity;
 		
 		static SecIdentity ()
 		{
@@ -212,8 +212,8 @@ namespace Security.Tls {
 				return;
 
 			try {		
-				ImportExportPassphase = CFObject.GetIndirect (handle, "kSecImportExportPassphrase");
-				ImportItemIdentity = CFObject.GetIndirect (handle, "kSecImportItemIdentity");
+				ImportExportPassphase = CFObject.GetStringConstant (handle, "kSecImportExportPassphrase");
+				ImportItemIdentity = CFObject.GetStringConstant (handle, "kSecImportItemIdentity");
 			} finally {
 				CFObject.dlclose (handle);
 			}
@@ -260,13 +260,13 @@ namespace Security.Tls {
 			if (string.IsNullOrEmpty (password)) // SecPKCS12Import() doesn't allow empty passwords.
 				throw new ArgumentException ("password");
 			using (var pwstring = CFString.Create (password))
-			using (var options = CFDictionary.FromObjectAndKey (pwstring.Handle, ImportExportPassphase)) {
+			using (var options = CFDictionary.FromObjectAndKey (pwstring.Handle, ImportExportPassphase.Handle)) {
 				CFDictionary [] array;
 				SecStatusCode result = SecImportExport.ImportPkcs12 (data, options, out array);
 				if (result != SecStatusCode.Success)
 					throw new InvalidOperationException (result.ToString ());
 
-				return new SecIdentity (array [0].GetValue (ImportItemIdentity));
+				return new SecIdentity (array [0].GetValue (ImportItemIdentity.Handle));
 			}
 		}
 
