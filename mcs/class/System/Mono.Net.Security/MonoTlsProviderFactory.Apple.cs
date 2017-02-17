@@ -81,12 +81,12 @@ namespace Mono.Net.Security
 		static object locker = new object ();
 
 #if SECURITY_DEP
-		static MSI.MonoTlsProvider provider;
-		static MSI.MonoTlsProvider GetTlsProvider ()
+		static IMonoTlsProvider provider;
+		static IMonoTlsProvider GetTlsProvider ()
 		{
 			lock (locker) {
 				if (provider == null)
-					provider = new AppleTlsProvider ();
+					provider = new Private.MonoTlsProviderWrapper (new AppleTlsProvider ());
 				return provider;
 			}
 		}
@@ -102,7 +102,7 @@ namespace Mono.Net.Security
 
 		internal static MSI.MonoTlsProvider GetProvider ()
 		{
-			return GetTlsProvider ();
+			return GetTlsProvider ().Provider;
 		}
 
 		internal static bool IsProviderSupported (string name)
@@ -112,7 +112,7 @@ namespace Mono.Net.Security
 
 		internal static MSI.MonoTlsProvider GetProvider (string name)
 		{
-			return GetTlsProvider ();
+			return GetTlsProvider ().Provider;
 		}
 
 		internal static bool IsInitialized => true;
