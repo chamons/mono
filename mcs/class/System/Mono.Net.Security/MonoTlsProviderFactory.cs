@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#if !MONO_FEATURE_APPLETLS //MONO_FEATURE_APPLETLS uses MonoTlsProviderFactory.Apple.cs instead 
+#if !ONLY_APPLETLS // ONLY_APPLETLS uses MonoTlsProviderFactory.Apple.cs instead 
 
 #if SECURITY_DEP
 #if MONO_SECURITY_ALIAS
@@ -157,6 +157,7 @@ namespace Mono.Net.Security
 
 		const string LegacyProviderTypeName = "Mono.Net.Security.LegacyTlsProvider";
 		const string BtlsProviderTypeName = "Mono.Btls.MonoBtlsProvider";
+		const string AppleTLSProviderTypeName = "Security.Tls.AppleTlsProvider";
 			
 		static void InitializeProviderRegistration ()
 		{
@@ -165,12 +166,21 @@ namespace Mono.Net.Security
 					return;
 				providerRegistration = new Dictionary<string,string> ();
 				providerRegistration.Add ("legacy", LegacyProviderTypeName);
-				
+
+				providerRegistration.Add ("appleTLS", AppleTLSProviderTypeName);
+
 				bool btls_supported = IsBtlsSupported ();
 				if (btls_supported)
 					providerRegistration.Add ("btls", BtlsProviderTypeName);
 
-				providerRegistration.Add ("default", btls_supported  && !Platform.IsMacOS ? BtlsProviderTypeName : LegacyProviderTypeName);
+				string defaultProvider;
+				if (Platform.IsMacOS)
+					defaultProvider = AppleTLSProviderTypeName;
+				else if (btls_supported)
+					defaultProvider = BtlsProviderTypeName;
+				else
+					defaultProvider = LegacyProviderTypeName;
+				providerRegistration.Add ("default", defaultProvider);
 					
 				X509Helper2.Initialize ();
 			}
