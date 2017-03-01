@@ -43,14 +43,7 @@ namespace Security.Tls {
 	partial class SecCertificate : INativeObject, IDisposable {
 		internal IntPtr handle;
 		
-		// invoked by marshallers
-		public SecCertificate (IntPtr handle)
-			: this (handle, false)
-		{
-		}
-		
-		[Preserve (Conditional = true)]
-		internal SecCertificate (IntPtr handle, bool owns)
+		internal SecCertificate (IntPtr handle, bool owns = false)
 		{
 			if (handle == IntPtr.Zero)
 				throw new Exception ("Invalid handle");
@@ -221,14 +214,7 @@ namespace Security.Tls {
 
 		internal IntPtr handle;
 		
-		// invoked by marshallers
-		public SecIdentity (IntPtr handle)
-			: this (handle, false)
-		{
-		}
-		
-		[Preserve (Conditional = true)]
-		internal SecIdentity (IntPtr handle, bool owns)
+		internal SecIdentity (IntPtr handle, bool owns = false)
 		{
 			this.handle = handle;
 			if (!owns)
@@ -315,14 +301,7 @@ namespace Security.Tls {
 	partial class SecKey : INativeObject, IDisposable {
 		internal IntPtr handle;
 		
-		// invoked by marshallers
-		public SecKey (IntPtr handle)
-			: this (handle, false)
-		{
-		}
-		
-		[Preserve (Conditional = true)]
-		public SecKey (IntPtr handle, bool owns)
+		public SecKey (IntPtr handle, bool owns = false)
 		{
 			this.handle = handle;
 			if (!owns)

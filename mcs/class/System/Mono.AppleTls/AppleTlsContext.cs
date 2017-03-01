@@ -317,8 +317,10 @@ namespace Security.Tls
 			else
 				MaxProtocol = SslProtocol.Tls_1_0;
 
+#if MARTIN_DEBUG
 			foreach (var c in GetSupportedCiphers ())
 				Debug ("  {0} SslCipherSuite.{1} {2:x} {3}", IsServer ? "Server" : "Client", c, (int)c, (CipherSuiteCode)c);
+#endif
 
 			if (Settings != null && Settings.EnabledCiphers != null) {
 				SslCipherSuite [] ciphers = new SslCipherSuite [Settings.EnabledCiphers.Length];
@@ -689,14 +691,6 @@ namespace Security.Tls
 					throw new TlsException (AlertDescription.CertificateUnknown);
 			}
 			return (value == IntPtr.Zero) ? null : new SecTrust (value);
-		}
-
-		[DllImport ("/System/Library/Frameworks/Security.framework/Security")]
-		extern unsafe static /* CFType */ IntPtr SSLContextGetTypeID ();
-
-		public static IntPtr GetTypeId ()
-		{
-			return SSLContextGetTypeID ();
 		}
 
 		#endregion

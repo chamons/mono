@@ -40,13 +40,7 @@ namespace Security.Tls {
 	partial class SecTrust : INativeObject, IDisposable {
 		IntPtr handle;
 
-		public SecTrust (IntPtr handle) 
-			: this (handle, false)
-		{
-		}
-
-		[Preserve (Conditional=true)]
-		internal SecTrust (IntPtr handle, bool owns)
+		internal SecTrust (IntPtr handle, bool owns = false)
 		{
 			if (handle == IntPtr.Zero)
 				throw new Exception ("Invalid handle");

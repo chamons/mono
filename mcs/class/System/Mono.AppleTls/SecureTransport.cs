@@ -10,17 +10,17 @@ namespace Security.Tls {
 	// untyped enum
 	enum SslProtocol {
 		Unknown = 0,
-		Ssl_3_0 = 2,
+		// Ssl_3_0 = 2,
 		Tls_1_0 = 4,
 		Tls_1_1 = 7, 
 		Tls_1_2 = 8, 
-		Dtls_1_0 = 9,
+		// Dtls_1_0 = 9,
 		
 		/* Obsolete on iOS */
-		Ssl_2_0 = 1,          
-		Ssl_3_0_only = 3,         
-		Tls_1_0_only = 5,         
-		All = 6,                
+		// Ssl_2_0 = 1,          
+		// Ssl_3_0_only = 3,         
+		// Tls_1_0_only = 5,         
+		// All = 6,                
 	}
 
 	// subset of OSStatus (int)
@@ -87,25 +87,25 @@ namespace Security.Tls {
 		BreakOnCertRequested,
 		BreakOnClientAuth,
 
-		FalseStart,
+		// FalseStart,
 
-		SendOneByteRecord,
+		// SendOneByteRecord,
 
-		AllowServerIdentityChange = 5,
+		// AllowServerIdentityChange = 5,
 		
-		Fallback = 6,
+		// Fallback = 6,
 
-		BreakOnClientHello = 7,
+		// BreakOnClientHello = 7,
 
-		AllowRenegotiation = 8,
+		// AllowRenegotiation = 8,
 	}
 
 	// Security.framework/Headers/SecureTransport.h
 	// untyped enum
 	enum SslAuthenticate {
-		Never,
-		Always,
-		Try
+		// Never,
+		// Always,
+		Try = 2,
 	}
 
 	// Security.framework/Headers/SecureTransport.h
@@ -119,18 +119,18 @@ namespace Security.Tls {
 	// untyped enum
 	enum SslConnectionType {
 		Stream,
-		Datagram
+		// Datagram
 	}
 
 	// Security.framework/Headers/SecureTransport.h
 	// untyped enum
 	enum SslSessionState {
 		Invalid = -1,
-		Idle,
-		Handshake,
-		Connected,
-		Closed,
-		Aborted
+		// Idle,
+		// Handshake,
+		// Connected,
+		// Closed,
+		// Aborted
 	}
 
 	// Security.framework/Headers/SecureTransport.h

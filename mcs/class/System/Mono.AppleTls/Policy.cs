@@ -38,13 +38,7 @@ namespace Security.Tls {
 	partial class SecPolicy : INativeObject, IDisposable {
 		IntPtr handle;
 
-		public SecPolicy (IntPtr handle) 
-			: this (handle, false)
-		{
-		}
-
-		[Preserve (Conditional=true)]
-		internal SecPolicy (IntPtr handle, bool owns)
+		internal SecPolicy (IntPtr handle, bool owns = false)
 		{
 			if (handle == IntPtr.Zero)
 				throw new Exception ("Invalid handle");
@@ -88,36 +82,6 @@ namespace Security.Tls {
 				CFObject.CFRelease (handle);
 				handle = IntPtr.Zero;
 			}
-		}
-
-		public static bool operator == (SecPolicy a, SecPolicy b)
-		{
-			if (((object)a) == null)
-				return ((object)b) == null;
-			else if ((object)b == null)
-				return false;
-
-			return a.Handle == b.Handle;
-		}
-
-		public static bool operator != (SecPolicy a, SecPolicy b)
-		{
-			if (((object)a) == null)
-				return ((object)b) != null;
-			else if (((object)b) == null)
-				return true;
-			return a.Handle != b.Handle;
-		}
-
-		public override bool Equals (object other)
-		{
-			var o = other as SecPolicy;
-			return this == o;
-		}
-
-		public override int GetHashCode ()
-		{
-			return (int) Handle;
 		}
 	}
 }

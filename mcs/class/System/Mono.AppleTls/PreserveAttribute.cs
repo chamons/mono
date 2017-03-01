@@ -46,16 +46,16 @@ namespace Foundation {
 		| AttributeTargets.Interface
 		| AttributeTargets.Delegate,
 		AllowMultiple = true)]
-	sealed class PreserveAttribute : Attribute {
+	sealed class PreserveAttribute2 : Attribute {
 
 		public bool AllMembers;
 		public bool Conditional;
 
-		public PreserveAttribute ()
+		public PreserveAttribute2 ()
 		{
 		}
 
-		public PreserveAttribute (Type type)
+		public PreserveAttribute2 (Type type)
 		{
 		}
 	}
