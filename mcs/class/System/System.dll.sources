@@ -581,7 +581,6 @@ Mono.AppleTls/AppleTlsContext.cs
 Mono.AppleTls/AppleTlsProvider.cs
 Mono.AppleTls/AppleTlsStream.cs
 Mono.AppleTls/INativeObject.cs
-Mono.AppleTls/PreserveAttribute.cs
 Mono.AppleTls/Certificate.cs
 Mono.AppleTls/ImportExport.cs
 Mono.AppleTls/Enums.cs
