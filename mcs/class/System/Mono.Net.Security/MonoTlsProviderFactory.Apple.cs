@@ -46,7 +46,7 @@ using System.Net;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 #if SECURITY_DEP
-using Security.Tls;
+using Mono.AppleTls;
 #endif
 
 namespace Mono.Net.Security

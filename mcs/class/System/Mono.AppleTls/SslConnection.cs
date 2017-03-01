@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 
 using ObjCRuntime;
 
-namespace Security.Tls 
+namespace Mono.AppleTls 
 {
 	delegate SslStatus SslReadFunc (IntPtr connection, IntPtr data, /* size_t* */ ref IntPtr dataLength);
 	delegate SslStatus SslWriteFunc (IntPtr connection, IntPtr data, /* size_t* */ ref IntPtr dataLength);

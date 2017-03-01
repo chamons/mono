@@ -157,7 +157,7 @@ namespace Mono.Net.Security
 
 		const string LegacyProviderTypeName = "Mono.Net.Security.LegacyTlsProvider";
 		const string BtlsProviderTypeName = "Mono.Btls.MonoBtlsProvider";
-		const string AppleTLSProviderTypeName = "Security.Tls.AppleTlsProvider";
+		const string AppleTlsProviderTypeName = "Mono.AppleTls.AppleTlsProvider";
 			
 		static void InitializeProviderRegistration ()
 		{
@@ -167,7 +167,7 @@ namespace Mono.Net.Security
 				providerRegistration = new Dictionary<string,string> ();
 				providerRegistration.Add ("legacy", LegacyProviderTypeName);
 
-				providerRegistration.Add ("appleTLS", AppleTLSProviderTypeName);
+				providerRegistration.Add ("apple", AppleTlsProviderTypeName);
 
 				bool btls_supported = IsBtlsSupported ();
 				if (btls_supported)
@@ -175,7 +175,7 @@ namespace Mono.Net.Security
 
 				string defaultProvider;
 				if (Platform.IsMacOS)
-					defaultProvider = AppleTLSProviderTypeName;
+					defaultProvider = AppleTlsProviderTypeName;
 				else if (btls_supported)
 					defaultProvider = BtlsProviderTypeName;
 				else

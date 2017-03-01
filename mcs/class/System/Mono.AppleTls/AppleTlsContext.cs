@@ -42,7 +42,7 @@ using ObjCRuntime;
 
 using nint = System.IntPtr;
 
-namespace Security.Tls
+namespace Mono.AppleTls
 {
 	class AppleTlsContext : MobileTlsContext
 	{

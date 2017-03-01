@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 using ObjCRuntime;
 using Mono.Net;
 
-namespace Security.Tls {
+namespace Mono.AppleTls {
 	partial class SecPolicy : INativeObject, IDisposable {
 		IntPtr handle;
 

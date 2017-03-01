@@ -25,7 +25,7 @@ using MonoSecurity::Mono.Security.Interface;
 using Mono.Security.Interface;
 #endif
 
-namespace Security.Tls
+namespace Mono.AppleTls
 {
 	static class AppleCertificateHelper
 	{

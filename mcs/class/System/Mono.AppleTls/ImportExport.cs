@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 using ObjCRuntime;
 using Mono.Net;
 
-namespace Security.Tls {
+namespace Mono.AppleTls {
 
 	internal partial class SecImportExport {
 		

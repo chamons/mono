@@ -37,7 +37,7 @@ using Mono.Net;
 
 using ObjCRuntime;
 
-namespace Security.Tls {
+namespace Mono.AppleTls {
 
 	partial class SecCertificate : INativeObject, IDisposable {
 		internal IntPtr handle;

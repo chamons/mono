@@ -35,7 +35,7 @@ using System.Security.Cryptography.X509Certificates;
 using ObjCRuntime;
 using Mono.Net;
 
-namespace Security.Tls {
+namespace Mono.AppleTls {
 	partial class SecTrust : INativeObject, IDisposable {
 		IntPtr handle;
 

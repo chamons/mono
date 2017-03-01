@@ -4,7 +4,7 @@
 using System;
 using ObjCRuntime;
 
-namespace Security.Tls {
+namespace Mono.AppleTls {
 
 	// Security.framework/Headers/SecureTransport.h
 	// untyped enum
