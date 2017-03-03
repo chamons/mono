@@ -26,7 +26,12 @@ MONO_SECURITY_DLL=$(the_libdir_base)Mono.Security.dll
 endif
 
 ifndef MOBILE_PROFILE
-TEST_LIB_REFS = System.Drawing $(MONO_SECURITY) System.Data System.Xml System.Core System.Configuration
+TEST_LIB_REFS = $(MONO_SECURITY) System.Data System.Xml System.Core System.Configuration
+
+ifndef NO_SYSTEM_DRAWING_DEPENDENCY
+TEST_LIB_REFS += System.Drawing
+endif
+
 else
 TEST_LIB_REFS = $(MONO_SECURITY) System.Data System.Xml System.Core
 endif
