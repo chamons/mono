@@ -1276,3 +1276,6 @@ ReferenceSources/Win32Exception.cs
 ../referencesource/System/services/monitoring/system/diagnosticts/processwaithandle.cs
 
 ../referencesource/System/compmod/microsoft/win32/safehandles/SafeProcessHandle.cs
+
+./MonoTouch/MonoPInvokeCallbackAttribute.cs
+
